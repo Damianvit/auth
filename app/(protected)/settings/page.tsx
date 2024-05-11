@@ -1,8 +1,20 @@
-import { auth } from "@/auth";
+"use client";
 
-const SettingsPage = async () => {
-    const session = await auth();
-    return <div>{JSON.stringify(session)}</div>;
+import { useSession, signOut } from "next-auth/react";
+
+const SettingsPage = () => {
+    const session = useSession();
+    const onClick = () => {
+        signOut();
+    };
+    return (
+        <div>
+            {JSON.stringify(session)}
+            <button onClick={onClick} type="submit">
+                Sign out
+            </button>
+        </div>
+    );
 };
 
 export default SettingsPage;

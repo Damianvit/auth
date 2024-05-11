@@ -20,8 +20,8 @@ import {
 import { CardWrapper } from "@/components/auth/card-wrapper";
 export const LoginForm = () => {
     const [ispending, startTransition] = useTransition();
-    const [error, setError] = useState<string | undefined>("");
-    const [success, setSuccess] = useState<string | undefined>("");
+    const [error, setError] = useState<string>("");
+    const [success, setSuccess] = useState<string>("");
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -30,15 +30,18 @@ export const LoginForm = () => {
         },
     });
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
         setError("");
         setSuccess("");
-        startTransition(() => {
-            login(values).then((data) => {
-                setError(data.error);
-                setSuccess(data.success);
-            });
-        });
+        try {
+            const data = await login(values);
+            if (data) {
+                setError(data.error || "");
+                setSuccess(data.success || "");
+            }
+        } catch (error) {
+            setError("An unexpected error occurred.");
+        }
     };
     return (
         <CardWrapper
